@@ -17,12 +17,14 @@ fig, ax = plt.subplots()
 plt.ion()
 
 while(True):
-    listener.loop(5)
+    for i in range(10):
+        listener.loop(1)
     decodes = listener.get_decodes()
     home_calls, tx_calls, homecall_spots = sc.build_connectivity_info(decodes, start_epoch = start_epoch)
     tx_needed = sc.cover_home_calls(tx_calls, home_calls, homecall_spots)
-    table = sc.tabulate(tx_calls, homecall_spots)
-    if(len(table)>3):
+    if(tx_needed):
+        table = sc.tabulate(tx_needed, homecall_spots)
+        print(tx_needed[0:5])
         plt.cla()
         im = sc.plot_snr_heatmap(table, ax)
         #fig.colorbar(im, ax=ax, label="SNR (dB)")

@@ -40,23 +40,11 @@ def plot_snr_heatmap(table, ax, fill_value=-30, cmap='hot'):
         [float(cell) if cell != '' else fill_value for cell in row[1:]]
         for row in table[1:]
     ]
-
-    # --- Sort columns by max SNR descending ---
-    max_per_col = [max(row[c] for row in grid) for c in range(len(col_labels))]
-    sorted_col_indices = sorted(range(len(col_labels)), key=lambda c: max_per_col[c], reverse=True)
-    col_labels = [col_labels[i] for i in sorted_col_indices]
-    grid = [[row[i] for i in sorted_col_indices] for row in grid]
-
-    # --- Sort rows by max SNR descending ---
-    max_per_row = [max(row) for row in grid]
-    sorted_row_indices = sorted(range(len(row_labels)), key=lambda r: max_per_row[r], reverse=True)
-    row_labels = [row_labels[i] for i in sorted_row_indices]
-    grid = [grid[i] for i in sorted_row_indices]
-
+    
     # Plot onto provided Axes
-    im = ax.imshow(grid, cmap=cmap, interpolation='nearest')
-    ax.set_xticks(range(len(col_labels)), labels=col_labels, rotation=90)
-    ax.set_yticks(range(len(row_labels)), labels=row_labels)
+    im = ax.imshow(grid, cmap=cmap)
+    ax.set_xticks(range(len(col_labels)), labels=col_labels, rotation=90, size = 6)
+    ax.set_yticks(range(len(row_labels)), labels=row_labels, size = 6)
 
     return im  # so caller can attach colorbar
 
