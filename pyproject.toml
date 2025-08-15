@@ -1,0 +1,29 @@
+[project]
+name = "stealth_contest"
+version = "0.0.1"
+license = "MIT"
+
+authors = [
+  { name="G1OJS", email="g1ojs@yahoo.com" },
+]
+description = "Instant ranking using pskreporter.info"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "numpy>=1.24.0",
+    "matplotlib"
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+keywords = []
+
+[project.urls]
+Homepage = "https://github.com/G1OJS/StealthContest"
+Issues = "https://github.com/G1OJS/StealthContest/issues"
+
+[tool.setuptools]
+packages = ["StealthContest"]
+license-files = ["LICENSE"]
