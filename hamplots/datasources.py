@@ -65,6 +65,7 @@ class pskr_listener:
                 ebfm = f"{d['t']}, {d['b']}, {d['f']}, {d['md']}, "
                 spot = f"{d['hc']}, {d['hl']}, {d['ha']}, {d['TxRx']}, {d['oc']}, {d['ol']}, {d['oa']}, {d['rp']}\n"
                 f.write(ebfm+spot)
+            f.flush()
 
 
 
