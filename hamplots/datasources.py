@@ -36,8 +36,6 @@ class pskr_listener:
 
     def add_decode(self, client, userdata, msg):
         d = ast.literal_eval(msg.payload.decode())
-        t = datetime.datetime.fromtimestamp(d['t'])
-        d.update({'t_str':str(t).replace(' ','_')})
         d['sl'] = d['sl'].upper()
         d['rl'] = d['rl'].upper()
         d.update({'TxRx':self.direction})
@@ -55,31 +53,64 @@ class pskr_listener:
         print(f"Writing spots to {filepath}")
         with open(filepath, "w") as f:
             for d in decodes:
-                dtbfm = f"{d['t_str']}, d['t']}, {d['b']}, {d['f']}, {d['md']}, "
+                ebfm = f"{d['t']}, {d['b']}, {d['f']}, {d['md']}, "
                 spot = f"{d['hc']}, {d['hl']}, {d['ha']}, {d['TxRx']}, {d['oc']}, {d['ol']}, {d['oa']}, {d['rp']}\n"
-                f.write(dtbfm+spot)
+                f.write(ebfm+spot)
 
-def str_to_epoch(t_str):
-    import datetime
-    yy = int(t_str[0:4])
-    m = int(t_str[5:7])
-    dd = int(t_str[8:10])
-    hh = int(t_str[11:13])
-    mm = int(t_str[14:16])
-    ss = int(t_str[17:19])
-    return datetime.datetime(yy,m,dd,hh,mm,ss).timestamp()
 
-def read_csv(filepath =  "decodes.csv", start_epoch = 0):
-    print(f"Reading spots from {filepath}")
-    decodes = []
-    with open(filepath, "r") as f:
-        for l in f.readlines():
-            ls=l.strip().split(", ")
-            d = {'t_str':ls[0], 'b':ls[1], 'f':ls[2], 'md':ls[3], 'hc':ls[4], 'hl':ls[5], 'ha':ls[6], 'TxRx':ls[7], 'oc':ls[8], 'ol':ls[9], 'oa':ls[10], 'rp':ls[11]}
-            if(str_to_epoch(d['t_str']) < start_epoch):
+
+class wsjt:
+    
+    def parse_line_datetime(line):
+        ## includes kludge to convert to BST
+         return datetime.datetime(2000+int(line[0:2]),int(line[2:4]),int(line[4:6]),
+                                 (int(line[7:9])+1) % 24, int(line[9:11]), int(line[11:13]) ).timestamp()
+
+    def parse_line(line):
+        import re
+        dt = parse_line_datetime(line)
+        ls = line.split()
+        if len(ls) == 10:
+            sq = ls[9]
+            if(re.search("[A-R][A-R][0-9][0-9]",sq) and sq != "RR73"):            
+                return {
+                    "dt": dt,
+                    "f": float(ls[1])*1e6,
+                    "sc": ls[8],
+                    "rc": "G1OJS",
+                    "rp": float(ls[4]),
+                    "sl": ls[9],
+                    "rl": "IO90",
+                    "km": None,
+                    "deg":None
+                }
+            
+    def read_ALLTXT(fpath, dt_first, home_square):
+       # print(f"{fpath}")
+        with open(fpath) as f:
+            lines = f.readlines()
+        decodes_all = []
+
+        km = {}
+        deg = {}
+        nrecs = 0
+        for l in lines:
+            if(len(l)>100):
                 continue
-            decodes.append(d)
-    return decodes
+            dt = parse_line_datetime(l)
+            if(dt < dt_first):
+                continue
+            decode = parse_line(l)
+            if decode:
+                sc = decode["sc"]
+                if(sc not in km):
+                    kmdeg = sq_km_deg(decode["sl"], home_square)
+                    if(kmdeg):
+                        km[sc], deg[sc] = kmdeg
+                decodes_all.append(decode)
+                nrecs += 1
+      #    print(f"Read {len(lines)} lines with {nrecs} decodes in session time window\n")
+        return decodes_all
 
 
 

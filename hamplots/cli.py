@@ -25,5 +25,6 @@ def get_config_option(config, section, option, default):
         return default
 
 
-
+def main():
+    print("main")
 

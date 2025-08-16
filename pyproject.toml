@@ -1,6 +1,6 @@
 [project]
-name = "stealth_contest"
-version = "0.0.1"
+name = "ham-plots"
+version = "0.0.2"
 license = "MIT"
 
 authors = [
@@ -24,9 +24,5 @@ keywords = []
 Homepage = "https://github.com/G1OJS/StealthContest"
 Issues = "https://github.com/G1OJS/StealthContest/issues"
 
-[tool.setuptools]
-packages = ["StealthContest"]
-license-files = ["LICENSE"]
-
 [project.scripts]
-ham-plots = "ham-plots:main"
+ham_plots = "ham_plots.cli:main"

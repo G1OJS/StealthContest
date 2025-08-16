@@ -90,6 +90,21 @@ def cover_home_calls(tx_calls, home_calls, homecall_spots):
 
 
 
+def read_csv(filepath =  "decodes.csv", start_epoch = 0):
+    print(f"Reading spots from {filepath}")
+    decodes = []
+    with open(filepath, "r") as f:
+        for l in f.readlines():
+            ls=l.strip().split(", ")
+            d = {'t':ls[0], 'b':ls[1], 'f':ls[2], 'md':ls[3], 'hc':ls[4], 'hl':ls[5], 'ha':ls[6], 'TxRx':ls[7], 'oc':ls[8], 'ol':ls[9], 'oa':ls[10], 'rp':ls[11]}
+            if(str_to_epoch(d['t_str']) < start_epoch):
+                continue
+            decodes.append(d)
+    return decodes
+
+
+
+
 
 
 
