@@ -59,7 +59,7 @@ jobs:
 
   do_plots:
     runs-on: ubuntu-latest
-    needs:[collect_rx, collect_tx]
+    needs: [collect_rx collect_tx]
 
     steps:
       - uses: actions/checkout@v3
