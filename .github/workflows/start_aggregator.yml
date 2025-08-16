@@ -1,4 +1,4 @@
-name: Start package loops
+name: Start aggregator
 
 on:
   workflow_dispatch:
