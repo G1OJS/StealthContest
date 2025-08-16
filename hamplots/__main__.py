@@ -4,6 +4,7 @@ import seaborn as sns
 import numpy as np
 import time
 import hamplots as hp
+import os
 
 
 mySquares = "IO80,IO81,IO82,IO90,IO91,IO92,JO01,JO02,JO03"
@@ -12,12 +13,12 @@ myModes = "FT8, FT4"
     
 def start_rx():
     rx_listener = hp.pskr_listener(mySquares, modes = myModes, bands = myBands, TxRx = "Rx", to_file = "Rx_decodes.csv")
-    rx_listener.loop_for_time(300);
+    rx_listener.loop_for_time(30);
     rx_listener.disconnect();
 
 def start_tx():
     tx_listener = hp.pskr_listener(mySquares, modes = myModes, bands = myBands, TxRx = "Tx", to_file = "Tx_decodes.csv")
-    tx_listener.loop_for_time(300);
+    tx_listener.loop_for_time(30);
     tx_listener.disconnect();
 
 def do_plots():
@@ -60,7 +61,9 @@ def do_plots():
                     plt.xticks(rotation=90)
                     plt.yticks(rotation=0)
                     plt.tight_layout()
-                    plt.savefig(f"../plots/{RxTx}_{band}_{mode}.png")
+                    if not os.path.exists("plots"):
+                        os.makedirs("plots")
+                    plt.savefig(f"plots/{RxTx}_{band}_{mode}.png")
                     plt.close()
 
 
