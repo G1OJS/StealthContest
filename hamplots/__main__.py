@@ -12,11 +12,13 @@ myModes = "FT8, FT4"
     
 def start_rx():
     rx_listener = hp.pskr_listener(mySquares, modes = myModes, bands = myBands, TxRx = "Rx", to_file = "Rx_decodes.csv")
-    rx_listener.loop_forever()
+    rx_listener.loop_for_time(300);
+    rx_listener.disconnect();
 
 def start_tx():
-    rx_listener = hp.pskr_listener(mySquares, modes = myModes, bands = myBands, TxRx = "Tx", to_file = "Tx_decodes.csv")
-    rx_listener.loop_forever()
+    tx_listener = hp.pskr_listener(mySquares, modes = myModes, bands = myBands, TxRx = "Tx", to_file = "Tx_decodes.csv")
+    tx_listener.loop_for_time(300);
+    tx_listener.disconnect();
 
 def do_plots():
     for RxTx in ["Rx","Tx"]:

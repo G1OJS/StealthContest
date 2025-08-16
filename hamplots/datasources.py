@@ -1,6 +1,7 @@
 import paho.mqtt.client as mqtt
 import ast
 import datetime
+import time
 
 def str_to_list(myStr):
     return [o.strip() for o in myStr.split(",")]
@@ -17,12 +18,11 @@ class pskr_listener:
         self.mqtt_cl.on_message = self.add_decode
         self.mqtt_cl.connect("mqtt.pskreporter.info", 1883, 60)
         self.to_file = to_file
-        if(self.to_file != ""):
-            self._multiloop_to_file()
 
-    def _multiloop_to_file(self):
-        for i in range(200):
-            self.mqtt_cl.loop(1)
+    def loop_for_time(self, time_seconds):
+        self.mqtt_cl.loop_start()
+        time.sleep(time_seconds)
+        self.mqtt_cl.loop_stop()
 
     def loop(self, timeout):
         self.mqtt_cl.loop(timeout)
