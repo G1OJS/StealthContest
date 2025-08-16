@@ -24,4 +24,4 @@ Homepage = "https://github.com/G1OJS/hamplots"
 Issues = "https://github.com/G1OJS/hamplots/issues"
 
 [tool.setuptools]
-packages = "hamplots/aggregator.py", "hamplots/plotter.py"
+package-dir = {"" = "hamplots"}
