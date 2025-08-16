@@ -3,6 +3,7 @@
 """
 from .pskr_utils import *
 from .analysers import *
+from .cli import *
 
 from importlib.metadata import version
 try:

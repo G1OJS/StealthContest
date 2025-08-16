@@ -27,3 +27,6 @@ Issues = "https://github.com/G1OJS/StealthContest/issues"
 [tool.setuptools]
 packages = ["StealthContest"]
 license-files = ["LICENSE"]
+
+[project.scripts]
+ham-plots = "ham-plots:main"

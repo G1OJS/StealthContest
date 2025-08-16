@@ -11,7 +11,7 @@ class pskr_listener:
         self.direction = direction
         self.mqtt_cl = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
         self.mqtt_cl.on_connect = self.subscribe
-        self.mqtt_cl.on_message = self.write_decode
+        self.mqtt_cl.on_message = self.add_decode
         self.mqtt_cl.connect("mqtt.pskreporter.info", 1883, 60)
         self.csvfilepath = csv_file
 
@@ -34,7 +34,7 @@ class pskr_listener:
                     tailstr = f"+/+/{sq}/+/+/#" if self.direction == "Tx" else f"+/+/+/{sq}/+/#"
                     client.subscribe(f"pskr/filter/v2/{b}/{md}/{tailstr}")
 
-    def write_decode(self, client, userdata, msg):
+    def add_decode(self, client, userdata, msg):
         d = ast.literal_eval(msg.payload.decode())
         t = datetime.datetime.fromtimestamp(d['t'])
         d.update({'t_str':str(t).replace(' ','_')})
@@ -55,7 +55,7 @@ class pskr_listener:
         print(f"Writing spots to {filepath}")
         with open(filepath, "w") as f:
             for d in decodes:
-                dtbfm = f"{d['t_str']}, {d['b']}, {d['f']}, {d['md']}, "
+                dtbfm = f"{d['t_str']}, d['t']}, {d['b']}, {d['f']}, {d['md']}, "
                 spot = f"{d['hc']}, {d['hl']}, {d['ha']}, {d['TxRx']}, {d['oc']}, {d['ol']}, {d['oa']}, {d['rp']}\n"
                 f.write(dtbfm+spot)
 
