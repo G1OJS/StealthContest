@@ -2,7 +2,7 @@ name: Update hamplots
 
 on:
   schedule:
-    - cron: '*/30 * * * *'  # every 30 minutes
+    - cron: '*/5 * * * *'  # every 5 minutes
   workflow_dispatch:       # manual trigger
 
 jobs:
@@ -24,7 +24,7 @@ jobs:
 
       - name: Run fetch_and_plot
         run: |
-          python -m hamplots.fetch_and_plot
+          python -m hamplots do_plots
 
       - name: List workspace
         run: |
