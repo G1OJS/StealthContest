@@ -7,7 +7,7 @@ import time
 myBands = "40m, 20m, 15m"
 myModes = "FT8, FT4"
 
-def periodic_update_plots:
+def periodic_update_plots():
     while True:
 
         for RxTx in ["Rx","Tx"]:

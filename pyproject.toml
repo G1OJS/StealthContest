@@ -4,8 +4,7 @@ version = "0.2.0"
 license = "MIT"
 description = "Realtime plots for ham radio band conditions"
 authors = [{name="G1OJS", email="g1ojs@yahoo.com"}]
-readme = "README.md"
-readme-content-type = "text/markdown"
+readme = {file = 'README.md', content-type='text/markdown'}
 requires-python = ">=3.10"
 dependencies = [
     "matplotlib",
@@ -14,6 +13,9 @@ dependencies = [
     "numpy",
     "paho-mqtt"  # if you use MQTT
 ]
+
+
+
 keywords = []
 
 [build-system]
@@ -26,3 +28,4 @@ Issues = "https://github.com/G1OJS/hamplots/issues"
 
 [tool.setuptools]
 package-dir = {"" = "hamplots"}
+

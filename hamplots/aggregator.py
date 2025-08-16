@@ -3,7 +3,7 @@ import hamplots as hp
 import time
 
 
-def periodic_mqtt_update:
+def periodic_mqtt_update():
     mySquares = "IO80,IO81,IO82,IO90,IO91,IO92,JO01,JO02,JO03"
     myBands = "40m, 20m, 15m, 10m, 2m"
     myModes = "FT8, FT4"
