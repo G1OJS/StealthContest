@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 import time
+from pathlib import Path
 
 mySquares = "IO80,IO81,IO82,IO90,IO91,IO92,JO01,JO02,JO03"
 myBands = "40m, 20m, 15m, 10m, 2m"
@@ -12,6 +13,11 @@ def instantiate_listeners():
     global rx_listener, tx_listener
     rx_listener = hp.pskr_listener(mySquares, modes = myModes, bands = myBands, TxRx = "Rx")
     tx_listener = hp.pskr_listener(mySquares, modes = myModes, bands = myBands, TxRx = "Tx")
+
+def disconnect_listeners():
+    global rx_listener, tx_listener
+    rx_listener.disconnect()
+    tx_listener.disconnect()
 
 def periodic_update_plots():
     for i in range(5):
@@ -65,6 +71,8 @@ def update_plots():
                     plt.xticks(rotation=90)
                     plt.yticks(rotation=0)
                     plt.tight_layout()
+
+                    Path("plots").mkdir(exist_ok=True)
                     plt.savefig(f"plots/{RxTx}_{band}_{mode}.png")
                     plt.close()
         
@@ -73,6 +81,7 @@ def update_plots():
 def main():
     instantiate_listeners()
     periodic_update_plots()
+    disconnect_listeners()
 
 if __name__ == "__main__":
     main()

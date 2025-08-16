@@ -25,7 +25,11 @@ class pskr_listener:
         self.mqtt_cl.loop_forever()
 
     def get_decodes(self):
+        client.loop_stop()     
         return self.decodes
+
+    def disconnect(self):
+        self.mqtt_cl.disconnect()  
 
     def purge_decodes(self, epoch):
         n1 = len(self.decodes)
