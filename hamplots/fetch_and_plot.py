@@ -65,15 +65,15 @@ def update_plots():
                     plt.xticks(rotation=90)
                     plt.yticks(rotation=0)
                     plt.tight_layout()
-                    plt.savefig(f"../plots/{RxTx}_{band}_{mode}.png")
+                    plt.savefig(f"plots/{RxTx}_{band}_{mode}.png")
                     plt.close()
         
 
 
-def run():
+def main():
     instantiate_listeners()
     periodic_update_plots()
 
 if __name__ == "__main__":
-    run()
+    main()
 

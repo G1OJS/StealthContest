@@ -1,6 +1,6 @@
 [project]
 name = "hamplots"
-version = "0.3.0"
+version = "0.6.0"
 license = "MIT"
 description = "Realtime plots for ham radio band conditions"
 authors = [{name="G1OJS", email="g1ojs@yahoo.com"}]
