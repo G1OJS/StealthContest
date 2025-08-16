@@ -1,4 +1,4 @@
-name: Start package loops
+name: Start plotter
 
 on:
   workflow_dispatch:
