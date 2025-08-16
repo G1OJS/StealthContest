@@ -4,21 +4,37 @@ import seaborn as sns
 import numpy as np
 import time
 
-myBands = "40m, 20m, 15m"
+mySquares = "IO80,IO81,IO82,IO90,IO91,IO92,JO01,JO02,JO03"
+myBands = "40m, 20m, 15m, 10m, 2m"
 myModes = "FT8, FT4"
 
+def instantiate_listeners():
+    global rx_listener, tx_listener
+    rx_listener = hp.pskr_listener(mySquares, modes = myModes, bands = myBands, TxRx = "Rx")
+    tx_listener = hp.pskr_listener(mySquares, modes = myModes, bands = myBands, TxRx = "Tx")
+
 def periodic_update_plots():
+    for i in range(5):
+        update_plots()
+        time.sleep(5)
+
+def update_plots():
+    
+    for i in range(50):
+        rx_listener.loop(2)
+    rx_decodes = rx_listener.get_decodes()
+
+    for i in range(50):
+        tx_listener.loop(2)
+    tx_decodes = tx_listener.get_decodes()
 
     for RxTx in ["Rx","Tx"]:
-        listener = hp.pskr_listener(mySquares, modes = myModes, bands = myBands, TxRx = RxTx)
-        for i in range(50):
-            listener.loop(1)
-        decodes = listener.get_decodes()
-        
+            
         for band in myBands.split(", "):
             for mode in myModes.split(", "):
-                print(f"Rx_{band}_{mode}")
-
+                print(f"{RxTx}_{band}_{mode}")
+                decodes = rx_decodes if RxTx == "Rx" else tx_decodes
+                
                 remote_calls, homecall_reports = hp.build_connectivity_info(decodes, bands=band, modes=mode)
             #    remote_calls_needed = hp.cover_home_calls(remote_calls, homecall_reports)
                 remote_calls_needed = remote_calls
@@ -55,6 +71,7 @@ def periodic_update_plots():
 
 
 def run():
+    instantiate_listeners()
     periodic_update_plots()
 
 if __name__ == "__main__":
