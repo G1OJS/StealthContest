@@ -1,9 +1,11 @@
-def str_to_list(myStr):
-    return [o.strip() for o in myStr.split(",")]
-
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import os.path
+
+def str_to_list(myStr):
+    return [o.strip() for o in myStr.split(",")]
+
 
 def tabulate_reports(remote_calls, homecall_reports):
     # flatten nested dict
@@ -79,6 +81,8 @@ def cover_home_calls(calls, spots):
 
 
 def read_csv(filepath =  "decodes.csv", start_epoch = 0):
+    if (not os.path.isfile(filepath)):
+        return False
     
     decodes = []
     with open(filepath, "r") as f:

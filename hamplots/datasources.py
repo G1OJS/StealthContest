@@ -6,7 +6,7 @@ def str_to_list(myStr):
     return [o.strip() for o in myStr.split(",")]
 
 class pskr_listener:
-    def __init__(self, squares, bands="20m", modes="FT8", TxRx = "Rx", csv_file = "Rx_decodes.csv"):
+    def __init__(self, squares, bands="20m", modes="FT8", TxRx = "Rx", to_file=""):
         self.decodes = []
         self.squares = str_to_list(squares)
         self.bands = str_to_list(bands)
@@ -16,16 +16,21 @@ class pskr_listener:
         self.mqtt_cl.on_connect = self.subscribe
         self.mqtt_cl.on_message = self.add_decode
         self.mqtt_cl.connect("mqtt.pskreporter.info", 1883, 60)
-        self.csvfilepath = csv_file
+        self.to_file = to_file
+        if(self.to_file != ""):
+            self._multiloop_to_file()
+
+    def _multiloop_to_file(self):
+        for i in range(200):
+            self.mqtt_cl.loop(1)
 
     def loop(self, timeout):
         self.mqtt_cl.loop(timeout)
 
-    def loop_forever(self, timeout):
+    def loop_forever(self):
         self.mqtt_cl.loop_forever()
 
-    def get_decodes(self):
-        client.loop_stop()     
+    def get_decodes(self):    
         return self.decodes
 
     def disconnect(self):
@@ -58,11 +63,20 @@ class pskr_listener:
         d.update({'oc':  d['sc'] if self.TxRx =="Rx" else d['rc']})
         d.update({'ol':  d['sl'] if self.TxRx =="Rx" else d['rl']})
         d.update({'oa':  d['sa'] if self.TxRx =="Rx" else d['ra']})
-        self.decodes.append(d)
+        if(self.to_file !=""):
+            with open(self.to_file, 'a') as f:
+                ebfm = f"{d['t']}, {d['b']}, {d['f']}, {d['md']}, "
+                spot = f"{d['hc']}, {d['hl']}, {d['ha']}, {d['TxRx']}, {d['oc']}, {d['ol']}, {d['oa']}, {d['rp']}\n"
+                f.write(ebfm+spot)
+                f.flush()
+        else:
+            self.decodes.append(d)
 
-    def write_csv(self, decodes = None, filepath =  "decodes.csv"):
+    def write_csv(self, decodes = None, filepath = ""):
         if(decodes == None):
             decodes = self.decodes
+        if(filepath == ""):
+            filepath =  f"{self.TxRx}_decodes.csv"
         print(f"Writing {len(decodes)} decodes to {filepath}")
         with open(filepath, "w") as f:
             for d in decodes:

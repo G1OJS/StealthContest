@@ -1,11 +1,8 @@
 """
     Standard Python initialiser handling imports from modules and version number
 """
-
-from hamplots.datasources import *
-from hamplots.aggregator import *
-from hamplots.analysers import *
-from hamplots.plotter import *
+from .datasources import *
+from .analysers import *
 
 from importlib.metadata import version
 try:
