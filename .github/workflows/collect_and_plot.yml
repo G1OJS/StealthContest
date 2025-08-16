@@ -78,7 +78,7 @@ jobs:
         run: |
           python -m hamplots do_plots
 
-        - name: Commit and push plots
+      - name: Commit and push plots
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
