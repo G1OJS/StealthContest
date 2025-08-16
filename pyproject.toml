@@ -1,10 +1,11 @@
 [project]
 name = "hamplots"
-version = "0.1.0"
+version = "0.2.0"
 license = "MIT"
 description = "Realtime plots for ham radio band conditions"
 authors = [{name="G1OJS", email="g1ojs@yahoo.com"}]
 readme = "README.md"
+readme-content-type = "text/markdown"
 requires-python = ">=3.10"
 dependencies = [
     "matplotlib",
