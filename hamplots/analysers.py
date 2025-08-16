@@ -1,47 +1,47 @@
+def str_to_list(myStr):
+    return [o.strip() for o in myStr.split(",")]
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
 
 def tabulate_reports(remote_calls, homecall_reports):
-    colheads = [""]
-    for hc in homecall_reports:
-        colheads.append(hc)
-    rows = [colheads]
+    # flatten nested dict
+    records = []
+    for hc, rc_dict in homecall_reports.items():
+        for rc, rplist in rc_dict.items():
+            for rp in rplist:
+                records.append((rc, hc, int(rp)))
 
-    for rc in remote_calls:
-        row = [rc]
-        for hc in homecall_reports:
-            row.append(max(int(rp) for rp in homecall_reports[hc][rc])  if rc in homecall_reports[hc] else -30)
-        rows.append(row)
-    return rows
+    df = pd.DataFrame(records, columns=["remote", "home", "report"])
 
-def print_table(rows):
-    for r in rows:
-        txt=""
-        for c in r:
-            if(c is None):
-                c = ''
-            txt+=(f"{c:<10}")
-        print(txt)
+    # pivot to table of max report
+    pivot = df.groupby(["remote", "home"])["report"].max().unstack(fill_value=-30)
 
-def plot_snr_heatmap(table, ax, fill_value=-30, cmap='hot'):
-    col_labels = table[0][1:]
-    row_labels = [row[0] for row in table[1:]]
+    # include all expected rows/cols
+    pivot = pivot.reindex(index=remote_calls, columns=homecall_reports.keys(), fill_value=-30)
 
-    grid = [ [float(cell) if cell != '' else fill_value for cell in row[1:]]
-        for row in table[1:] ]
-    
-    im = ax.imshow(grid, cmap=cmap)
-    ax.set_xticks(range(len(col_labels)), labels=col_labels, rotation=90, size = 6)
-    ax.set_yticks(range(len(row_labels)), labels=row_labels, size = 6)
+    # sort rows and cols by max report
+ #   pivot = pivot.reindex(pivot.max(axis=1).sort_values(ascending=False).index)
+ #   pivot = pivot[pivot.max(axis=0).sort_values(ascending=False).index]
 
-    return im
+    # return same structure as before
+    return pivot.index.tolist(), pivot.columns.tolist(), pivot.values.tolist()
 
-def build_connectivity_info(decodes, start_epoch = 0):
-    # return
-    # calls[callsign] = nSpots
-    # spots[homecall] = [reports]
+
+def build_connectivity_info(decodes, start_epoch = 0, bands = "20m", modes = "FT8"):
+    """
+        returns:
+         calls[callsign] = nSpots
+         spots[homecall] = [reports]
+    """
     remote_calls = {}
     homecall_reports = {}
+    bands = str_to_list(bands)
+    modes = str_to_list(modes)
+
     for d in decodes:
-        if(int(d['t']) < start_epoch):
+        if(int(d['t']) < start_epoch or d['b'] not in bands or d['md'] not in modes):
             continue
         homecall_reports.setdefault(d['hc'],{})
         homecall_reports[d['hc']].setdefault(d['oc'],[]).append(d['rp'])
@@ -50,27 +50,36 @@ def build_connectivity_info(decodes, start_epoch = 0):
     return remote_calls, homecall_reports
 
         
-def cover_home_calls(calls,  spots):
-    # sort calls according to number of reports
-    calls = dict(sorted(calls.items(), key=lambda key_val: key_val[1], reverse = True))
-    #go through calls in order of decreeasing number of home call spots
-    #noting snr until all home calls have a spot
-    to_cover = []
-    for hc in spots:
-        to_cover.append(hc)
+def cover_home_calls(calls, spots):
+    """
+    calls: dict {remote_call: count_of_reports}
+    spots: dict {home_call: {remote_call: [reports...]}}
+    
+    Returns: list of remote calls needed to cover all home calls,
+             or False if impossible.
+    """
+    # sort remotes by number of reports (descending)
+    sorted_calls = sorted(calls, key=calls.get, reverse=True)
+    
+    # set of home calls that still need coverage
+    uncovered = set(spots.keys())
     needed = []
-    for c in calls:
-        needed.append(c)
-        for hc in spots:
-            if(c in spots[hc]):
-                if(hc in to_cover):
-                    to_cover.remove(hc)
-                if (len(to_cover)==0):
-                    return needed
-    return False
+    
+    for rc in sorted_calls:
+        # check which home calls this remote covers
+        covers = {hc for hc, rcs in spots.items() if rc in rcs}
+        if not covers:
+            continue
+        needed.append(rc)
+        uncovered -= covers
+        if not uncovered:  # all home calls covered
+            return needed
+    
+    return False  # some home calls never got covered
+
 
 def read_csv(filepath =  "decodes.csv", start_epoch = 0):
-    print(f"Reading spots from {filepath}")
+    
     decodes = []
     with open(filepath, "r") as f:
         for l in f.readlines():
@@ -79,6 +88,8 @@ def read_csv(filepath =  "decodes.csv", start_epoch = 0):
             if(int(d['t']) < start_epoch):
                 continue
             decodes.append(d)
+            
+    print(f"Read {len(decodes)} decodes from {filepath}")
     return decodes
 
 
