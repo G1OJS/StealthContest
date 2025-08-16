@@ -27,7 +27,3 @@ jobs:
         run: |
           python -m hamplots.aggregator
 
-      - name: Run plotter
-        run: |
-          python -m hamplots.plotter
-
